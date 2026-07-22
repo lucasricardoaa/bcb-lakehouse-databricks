@@ -1,7 +1,7 @@
 # ADR-0001: Armazenamento Delta — DBFS vs Unity Catalog
 
 ## Status
-Aceito
+Substituído por ADR-0006
 
 ## Contexto
 

@@ -15,7 +15,7 @@ Dois modelos foram avaliados:
 
 O contexto relevante para esta decisão:
 
-1. **Plataforma**: Databricks Community Edition. Instalar e configurar frameworks externos é possível via `pip install` em células de notebook, mas esses pacotes não persistem entre reinicializações de cluster — seriam reinstalados a cada execução, adicionando latência e potencial de falha por indisponibilidade de rede.
+1. **Plataforma**: Azure Databricks Trial. Frameworks externos podem ser instalados via `pip install` em células de notebook ou como cluster-scoped libraries (que persistem entre reinicializações). A simplicidade das assertions Python foi preferida independentemente dessa disponibilidade.
 
 2. **Projeto anterior (`bcb-pipeline`)**: usa Great Expectations para validação de qualidade, gerando Data Docs HTML como evidência auditável. A comparação entre as duas abordagens é relevante para o portfólio.
 
@@ -60,7 +60,7 @@ def assert_sem_nulos(df, coluna, contexto):
 
 **Delta constraints** (complemento, aplicados na Silver durante a Fase 4):
 ```sql
-ALTER TABLE silver_bcb ADD CONSTRAINT valor_positivo CHECK (valor > 0)
+ALTER TABLE main.default.silver_bcb ADD CONSTRAINT valor_positivo CHECK (valor > 0)
 ```
 
 Os constraints Delta são validados no momento da escrita — não substituem as assertions do notebook de quality checks, que validam semântica de negócio mais complexa.
@@ -84,7 +84,7 @@ Os constraints Delta são validados no momento da escrita — não substituem as
 ## Consequências
 
 ### Positivas
-- **Zero dependências externas**: assertions Python puro não têm risco de falha por pacote não instalado ou versão incompatível — crítico dado que o cluster Community Edition reinicia com frequência
+- **Zero dependências externas**: assertions Python puro não têm risco de falha por pacote não instalado ou versão incompatível — uma das vantagens para um projeto de portfólio onde o ambiente pode variar
 - **Mensagens de erro descritivas e customizadas**: cada assertion pode incluir contexto específico do domínio (nome da série, janela de datas, valor encontrado vs. esperado), impossível com frameworks genéricos
 - **Código Python legível e auditável**: qualquer engenheiro de dados entende as validações sem conhecer a API de nenhum framework
 - **Integração natural com o Workflow**: exceções Python interrompem a task de qualidade e marcam o job como falho automaticamente, sem configuração adicional
@@ -98,11 +98,11 @@ Os constraints Delta são validados no momento da escrita — não substituem as
 
 ## Alternativas consideradas
 
-- **Great Expectations**: framework de referência para qualidade de dados em Python, usado no `bcb-pipeline`. Oferece expectation suites, checkpoints e Data Docs HTML. Rejeitado porque **pacotes instalados via `pip install` em notebooks Databricks Community Edition não persistem entre reinicializações de cluster** — a cada execução do Workflow, o pacote precisaria ser reinstalado, adicionando latência e um ponto de falha por indisponibilidade de rede ou versão incompatível.
+- **Great Expectations**: framework de referência para qualidade de dados em Python, usado no `bcb-pipeline`. Oferece expectation suites, checkpoints e Data Docs HTML. Rejeitado porque adiciona overhead de configuração (expectation suites, checkpoints, Data Docs) desproporcional ao escopo das validações necessárias neste projeto; e porque as expectation suites e Data Docs não agregam valor de portfólio incremental — o `bcb-pipeline` já cobre essa demonstração.
 
-- **Soda Core**: alternativa mais leve ao Great Expectations, com configuração em YAML. Rejeitado pelo mesmo motivo do Great Expectations (instalação não persiste no Community Edition) e por adicionar uma camada de configuração YAML que obscurece as validações sem ganho de expressividade para o escopo deste projeto.
+- **Soda Core**: alternativa mais leve ao Great Expectations, com configuração em YAML. Rejeitado por adicionar uma camada de configuração YAML que obscurece as validações sem ganho de expressividade para o escopo deste projeto.
 
-- **dbt tests**: usar dbt Core para definir testes de qualidade sobre as tabelas Delta registradas no Hive Metastore. Rejeitado porque requer um projeto dbt separado com configuração de conexão ao Databricks, adicionando infraestrutura além do escopo; e porque a integração dbt + Databricks Community Edition é mais complexa do que o valor que agrega para este projeto de portfólio.
+- **dbt tests**: usar dbt Core para definir testes de qualidade sobre as tabelas Delta registradas no Unity Catalog. Rejeitado porque requer um projeto dbt separado com configuração de conexão ao Databricks, adicionando infraestrutura além do escopo deste projeto de portfólio.
 
 ## Revisão
 Elaborado por: Claude (Agente IA) — arquiteto-dados-aws

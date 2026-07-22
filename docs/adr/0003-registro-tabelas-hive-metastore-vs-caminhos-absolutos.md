@@ -1,7 +1,7 @@
 # ADR-0003: Registro de tabelas — Hive Metastore vs caminhos DBFS absolutos
 
 ## Status
-Aceito
+Substituído por ADR-0007
 
 ## Contexto
 

@@ -13,7 +13,7 @@ O pipeline ingere dados de 3 séries históricas da API pública do Banco Centra
 | Taxa Selic | 11 | Diária (dias úteis) | ~8.000 registros desde 1986 |
 | IPCA | 433 | Mensal | ~360 registros desde 1980 |
 
-O pipeline deve ser executável múltiplas vezes com a mesma janela de datas sem duplicar registros — requisito de **idempotência**. Essa é uma propriedade essencial para pipelines em produção e para o cenário deste projeto, onde o cluster Databricks Community Edition pode reiniciar e forçar reexecução.
+O pipeline deve ser executável múltiplas vezes com a mesma janela de datas sem duplicar registros — requisito de **idempotência**. Essa é uma propriedade essencial para pipelines em produção e para o cenário deste projeto, onde o cluster Azure Databricks Trial pode reiniciar (auto-terminate após 60 min de inatividade) e forçar reexecução.
 
 Duas estratégias são viáveis para ingestão sobre Delta Lake:
 
@@ -41,7 +41,7 @@ Adotar **`MERGE INTO` como estratégia padrão para execuções incrementais**, 
 **Estrutura do `MERGE INTO` na camada Bronze:**
 
 ```sql
-MERGE INTO bronze_bcb AS destino
+MERGE INTO main.default.bronze_bcb AS destino
 USING novos_registros AS origem
 ON destino.serie_id = origem.serie_id AND destino.data = origem.data
 WHEN MATCHED THEN UPDATE SET *
@@ -52,7 +52,7 @@ WHEN NOT MATCHED THEN INSERT *
 
 ### Positivas
 - Idempotência garantida por construção: executar o pipeline duas vezes com a mesma janela produz exatamente o mesmo estado na tabela destino
-- Compatível com o modelo de reexecução forçada pelo cluster Community Edition (que para após 2h de inatividade)
+- Compatível com o modelo de reexecução forçada pelo cluster Azure Databricks Trial (auto-terminate após 60 min de inatividade)
 - `DESCRIBE HISTORY` registra cada operação de MERGE, permitindo auditoria do que foi inserido ou atualizado em cada execução
 - A chave `(serie_id, data)` é semanticamente correta para os dados da API BCB — não há dois valores para a mesma série na mesma data
 - Alinha com a funcionalidade Delta Lake que diferencia este projeto do `bcb-pipeline` (Parquet + Athena não suporta upsert nativo)

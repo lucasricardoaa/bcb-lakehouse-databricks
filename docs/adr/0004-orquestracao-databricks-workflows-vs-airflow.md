@@ -17,7 +17,7 @@ O projeto anterior, `bcb-pipeline`, usa **Apache Airflow** como orquestrador ext
 
 O Databricks oferece **Workflows** como serviço nativo de orquestração: jobs com múltiplas tasks encadeadas, cada task mapeada para um notebook no Repos, com dependências declaradas e parâmetros passados como job parameters. A definição do job pode ser exportada como JSON para versionamento no repositório.
 
-**Restrição de plataforma relevante:** o Databricks Community Edition **não suporta agendamento automático de jobs** (sem cron triggers ou scheduled runs). Jobs só podem ser disparados manualmente via UI ou via API REST. Além disso, o cluster para automaticamente após 2 horas de inatividade, o que torna o agendamento automático impraticável mesmo que fosse suportado.
+**Nota de plataforma:** o Azure Databricks Trial **suporta agendamento automático de jobs** via cron triggers. Para este projeto de portfólio, optou-se por execução manual para simplificar o escopo — o foco é demonstrar a estrutura do Workflow e a passagem de parâmetros, não o agendamento em si. O cluster tem auto-terminate configurado para 60 minutos de inatividade.
 
 ## Decisão
 
@@ -36,7 +36,7 @@ Utilizar **Databricks Workflows** como orquestrador nativo do pipeline, com a de
 
 **Artefato de versionamento:** `workflows/bcb_pipeline.json` contém a definição completa do job exportada da UI do Databricks. Este arquivo é o equivalente funcional dos arquivos de DAG Python do `bcb-pipeline`.
 
-**Execução:** manual via UI do Databricks ou via Databricks CLI (`databricks jobs run-now`). Não há agendamento automático neste projeto — limitação do Community Edition documentada explicitamente.
+**Execução:** manual via UI do Databricks ou via Databricks CLI (`databricks jobs run-now`). O Azure Databricks Trial suporta cron triggers, mas a execução manual foi escolhida para simplificar o escopo deste projeto de portfólio.
 
 **Comparação direta com o `bcb-pipeline`:**
 
@@ -45,7 +45,7 @@ Utilizar **Databricks Workflows** como orquestrador nativo do pipeline, com a de
 | Definição do pipeline | DAG Python (`dags/bcb_dag.py`) | JSON exportado (`workflows/bcb_pipeline.json`) |
 | Dependências entre tasks | `>>` operator no DAG | `depends_on` no job definition |
 | Parâmetros de execução | Airflow Variables / conf dict | Job parameters (widgets) |
-| Agendamento | Cron expression na DAG | Manual (Community Edition) / Cron trigger (edições pagas) |
+| Agendamento | Cron expression na DAG | Manual (escolha do projeto; cron trigger disponível no Azure Trial) |
 | Monitoramento | Airflow UI (logs por task) | Databricks UI (logs por task run) |
 | Reexecução de task isolada | `airflow tasks run` | Re-run de task individual via UI |
 | Versionamento da definição | Arquivo Python no repo | JSON exportado no repo |
@@ -62,11 +62,11 @@ Utilizar **Databricks Workflows** como orquestrador nativo do pipeline, com a de
 - **Demonstração de diferencial de portfólio**: a comparação Airflow vs Workflows, documentada nesta ADR e no `docs/architecture.md`, é o diferencial narrativo central do projeto
 
 ### Negativas / Trade-offs
-- **Sem agendamento automático no Community Edition**: execução manual é o único modo disponível; em produção com edições pagas, o agendamento por cron seria nativo
+- **Execução manual por escolha de escopo**: o Azure Databricks Trial suporta cron triggers, mas a execução manual foi adotada para manter o foco do projeto na estrutura do pipeline, não na automação de scheduling
 - **Dependência de UI para criação do job**: a definição inicial do Workflow é feita pela interface gráfica do Databricks, não por código declarativo (como um DAG Python). O JSON exportado documenta o resultado, mas não é o artefato de criação
 - **Portabilidade limitada ao ecossistema Databricks**: o Workflow só funciona dentro do Databricks — ao contrário do Airflow, que pode orquestrar tarefas em qualquer plataforma ou linguagem
 - **Sem DAG como código por padrão**: o Airflow representa o pipeline como código Python versionável desde a criação; o Workflow requer a UI como intermediário, e o JSON de exportação é um artefato secundário
-- **Reexecução parcial menos granular**: no Airflow é possível reexecutar tasks individuais com backfill complexo via CLI; no Workflow Community Edition, o controle é mais limitado
+- **Reexecução parcial menos granular**: no Airflow é possível reexecutar tasks individuais com backfill complexo via CLI; no Databricks Workflow, o controle de reexecução individual é mais limitado
 
 ## Alternativas consideradas
 
@@ -74,7 +74,7 @@ Utilizar **Databricks Workflows** como orquestrador nativo do pipeline, com a de
 
 - **Execução manual sequencial sem orquestrador formal**: rodar os 4 notebooks manualmente na ordem correta sem um job definido. Rejeitado porque não gera o artefato `bcb_pipeline.json` que demonstra conhecimento de Workflows, e não permite passar parâmetros de data de forma controlada.
 
-- **Databricks Asset Bundles (DAB) para definição como código**: usar o CLI da Databricks com arquivos YAML para definir o job como Infrastructure as Code. Rejeitado porque o Community Edition tem suporte limitado a DABs e aumentaria a complexidade de setup além do escopo do projeto.
+- **Databricks Asset Bundles (DAB) para definição como código**: usar o CLI da Databricks com arquivos YAML para definir o job como Infrastructure as Code. Rejeitado porque aumentaria a complexidade de setup além do escopo deste projeto de portfólio, mesmo o Azure Trial suportando DABs.
 
 ## Revisão
 Elaborado por: Claude (Agente IA) — arquiteto-dados-aws

@@ -22,20 +22,16 @@ except Exception as e:
 
 # COMMAND ----------
 
-# MAGIC ## 2. Criar estrutura de diretórios DBFS (ADR-0001)
+# MAGIC ## 2. Criar Volumes no Unity Catalog (ADR-0006)
 
-diretorios = [
-    "/delta/bronze/bcb/",
-    "/delta/silver/bcb/",
-    "/delta/gold/",
-]
+volumes = ["bronze", "silver", "gold"]
 
-for path in diretorios:
-    dbutils.fs.mkdirs(path)
-    print(f"[OK] Criado: {path}")
+for vol in volumes:
+    spark.sql(f"CREATE VOLUME IF NOT EXISTS main.default.{vol}")
+    print(f"[OK] Volume criado (ou já existia): main.default.{vol}")
 
-print("\nListagem de /delta/:")
-display(dbutils.fs.ls("/delta/"))
+print("\nVolumes disponíveis em main.default:")
+display(spark.sql("SHOW VOLUMES IN main.default"))
 
 # COMMAND ----------
 
