@@ -27,11 +27,11 @@ except Exception as e:
 volumes = ["bronze", "silver", "gold"]
 
 for vol in volumes:
-    spark.sql(f"CREATE VOLUME IF NOT EXISTS main.default.{vol}")
-    print(f"[OK] Volume criado (ou já existia): main.default.{vol}")
+    spark.sql(f"CREATE VOLUME IF NOT EXISTS bcb_lakehouse_databricks.default.{vol}")
+    print(f"[OK] Volume criado (ou já existia): bcb_lakehouse_databricks.default.{vol}")
 
-print("\nVolumes disponíveis em main.default:")
-display(spark.sql("SHOW VOLUMES IN main.default"))
+print("\nVolumes disponíveis em bcb_lakehouse_databricks.default:")
+display(spark.sql("SHOW VOLUMES IN bcb_lakehouse_databricks.default"))
 
 # COMMAND ----------
 

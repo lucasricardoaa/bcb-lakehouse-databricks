@@ -60,7 +60,7 @@ def assert_sem_nulos(df, coluna, contexto):
 
 **Delta constraints** (complemento, aplicados na Silver durante a Fase 4):
 ```sql
-ALTER TABLE main.default.silver_bcb ADD CONSTRAINT valor_positivo CHECK (valor > 0)
+ALTER TABLE bcb_lakehouse_databricks.default.silver_bcb ADD CONSTRAINT valor_positivo CHECK (valor > 0)
 ```
 
 Os constraints Delta são validados no momento da escrita — não substituem as assertions do notebook de quality checks, que validam semântica de negócio mais complexa.

@@ -21,19 +21,19 @@ Esta mudança representa uma melhoria de plataforma em relação à restrição 
 
 ## Decisão
 
-Utilizar **Unity Catalog Volumes** para armazenamento dos arquivos Delta das camadas bronze, silver e gold, com caminhos organizados sob o catálogo `main` e o schema `default`, que são os recursos criados automaticamente no Azure Databricks Trial.
+Utilizar **Unity Catalog Volumes** para armazenamento dos arquivos Delta das camadas bronze, silver e gold, com caminhos organizados sob o catálogo `bcb_lakehouse_databricks` e o schema `default`, que são os recursos criados automaticamente no Azure Databricks Trial.
 
 A estrutura de caminhos por camada é:
 
 | Camada | Caminho no Volume | Conteúdo |
 |--------|-------------------|----------|
-| Bronze | `/Volumes/main/default/bronze/bcb/{serie_id}/` | JSON bruto da API BCB, sem transformação |
-| Silver | `/Volumes/main/default/silver/bcb/` | Dados limpos, tipados, particionados por `ano` e `mes` |
-| Gold   | `/Volumes/main/default/gold/` | Modelo analítico (`fct_indicadores`, `dim_data`) |
+| Bronze | `/Volumes/bcb_lakehouse_databricks/default/bronze/bcb/{serie_id}/` | JSON bruto da API BCB, sem transformação |
+| Silver | `/Volumes/bcb_lakehouse_databricks/default/silver/bcb/` | Dados limpos, tipados, particionados por `ano` e `mes` |
+| Gold   | `/Volumes/bcb_lakehouse_databricks/default/gold/` | Modelo analítico (`fct_indicadores`, `dim_data`) |
 
-O Volume para cada camada será um Volume externo ou gerenciado criado dentro do schema `default` do catálogo `main`. Os caminhos absolutos continuam sendo definidos como variáveis de configuração em arquivo compartilhado — nenhum notebook os referencia como literais inline.
+O Volume para cada camada será um Volume externo ou gerenciado criado dentro do schema `default` do catálogo `bcb_lakehouse_databricks`. Os caminhos absolutos continuam sendo definidos como variáveis de configuração em arquivo compartilhado — nenhum notebook os referencia como literais inline.
 
-As tabelas Delta registradas no Unity Catalog (decisão complementar da ADR-0003) continuam seguindo a hierarquia `main.default.<nome_tabela>`, consistente com o catálogo e schema escolhidos aqui.
+As tabelas Delta registradas no Unity Catalog (decisão complementar da ADR-0003) continuam seguindo a hierarquia `bcb_lakehouse_databricks.default.<nome_tabela>`, consistente com o catálogo e schema escolhidos aqui.
 
 ## Consequências
 
@@ -47,10 +47,10 @@ As tabelas Delta registradas no Unity Catalog (decisão complementar da ADR-0003
 - Narrativa de portfólio mais forte: demonstra uso do stack atual de produção Databricks, não um workaround de edição gratuita
 
 ### Negativas / Trade-offs
-- Os notebooks e o arquivo de configuração de caminhos precisam ser atualizados de `/delta/` para `/Volumes/main/default/`
+- Os notebooks e o arquivo de configuração de caminhos precisam ser atualizados de `/delta/` para `/Volumes/bcb_lakehouse_databricks/default/`
 - O Volume precisa ser criado no Unity Catalog antes da primeira execução dos notebooks (operação de infraestrutura, não de código de pipeline)
-- O catálogo `main` e o schema `default` são recursos padrão do Trial; em um ambiente corporativo, o catalog e schema seriam definidos por política de governança da organização, o que exigiria atualizar os caminhos novamente
-- ADR-0003 precisa ser revisada para confirmar que o registro de tabelas no Unity Catalog (`main.default.<tabela>`) está alinhado com os Volumes escolhidos aqui
+- O catálogo `bcb_lakehouse_databricks` e o schema `default` são recursos padrão do Trial; em um ambiente corporativo, o catalog e schema seriam definidos por política de governança da organização, o que exigiria atualizar os caminhos novamente
+- ADR-0003 precisa ser revisada para confirmar que o registro de tabelas no Unity Catalog (`bcb_lakehouse_databricks.default.<tabela>`) está alinhado com os Volumes escolhidos aqui
 
 ## Alternativas consideradas
 
@@ -63,7 +63,7 @@ As tabelas Delta registradas no Unity Catalog (decisão complementar da ADR-0003
 ## Relação com outras ADRs
 
 - **ADR-0001**: esta ADR substitui a ADR-0001. A decisão original de usar DBFS foi motivada por limitação de plataforma (Community Edition sem Unity Catalog) que não se aplica mais. O raciocínio da ADR-0001 permanece válido como contexto histórico.
-- **ADR-0003** (Registro de tabelas no Hive Metastore vs. caminhos absolutos): precisa ser revisada para confirmar alinhamento com Unity Catalog. O registro de tabelas em `main.default.<tabela>` é consistente com os Volumes em `main/default/`, mas a ADR-0003 faz referência ao Hive Metastore legado, que é substituído pelo Unity Catalog nesta plataforma.
+- **ADR-0003** (Registro de tabelas no Hive Metastore vs. caminhos absolutos): precisa ser revisada para confirmar alinhamento com Unity Catalog. O registro de tabelas em `bcb_lakehouse_databricks.default.<tabela>` é consistente com os Volumes em `bcb_lakehouse_databricks/default/`, mas a ADR-0003 faz referência ao Hive Metastore legado, que é substituído pelo Unity Catalog nesta plataforma.
 
 ## Revisão
 Elaborado por: Claude (Agente IA) — arquiteto-dados

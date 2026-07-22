@@ -41,7 +41,7 @@ Adotar **`MERGE INTO` como estratégia padrão para execuções incrementais**, 
 **Estrutura do `MERGE INTO` na camada Bronze:**
 
 ```sql
-MERGE INTO main.default.bronze_bcb AS destino
+MERGE INTO bcb_lakehouse_databricks.default.bronze_bcb AS destino
 USING novos_registros AS origem
 ON destino.serie_id = origem.serie_id AND destino.data = origem.data
 WHEN MATCHED THEN UPDATE SET *
