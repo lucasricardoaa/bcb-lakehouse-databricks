@@ -24,8 +24,6 @@ SCHEMA = "default"
 TABLE_SILVER = f"{CATALOG}.{SCHEMA}.silver_bcb"
 TABLE_FCT = f"{CATALOG}.{SCHEMA}.fct_indicadores"
 TABLE_DIM = f"{CATALOG}.{SCHEMA}.dim_data"
-PATH_FCT = f"/Volumes/{CATALOG}/{SCHEMA}/gold/fct_indicadores/"
-PATH_DIM = f"/Volumes/{CATALOG}/{SCHEMA}/gold/dim_data/"
 
 print(f"Fonte  : {TABLE_SILVER}")
 print(f"Gold fato : {TABLE_FCT}")
@@ -107,13 +105,7 @@ df_dim.write \
     .format("delta") \
     .mode("overwrite") \
     .option("overwriteSchema", "true") \
-    .save(PATH_DIM)
-
-spark.sql(f"""
-CREATE TABLE IF NOT EXISTS {TABLE_DIM}
-USING DELTA
-LOCATION '{PATH_DIM}'
-""")
+    .saveAsTable(TABLE_DIM)
 
 print(f"[OK] {TABLE_DIM} gravada")
 
@@ -125,13 +117,7 @@ df_fct.write \
     .format("delta") \
     .mode("overwrite") \
     .option("overwriteSchema", "true") \
-    .save(PATH_FCT)
-
-spark.sql(f"""
-CREATE TABLE IF NOT EXISTS {TABLE_FCT}
-USING DELTA
-LOCATION '{PATH_FCT}'
-""")
+    .saveAsTable(TABLE_FCT)
 
 print(f"[OK] {TABLE_FCT} gravada")
 

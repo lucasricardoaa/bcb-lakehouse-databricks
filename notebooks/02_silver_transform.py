@@ -44,11 +44,9 @@ CATALOG = "bcb_lakehouse_databricks"
 SCHEMA = "default"
 TABLE_BRONZE = f"{CATALOG}.{SCHEMA}.bronze_bcb"
 TABLE_SILVER = f"{CATALOG}.{SCHEMA}.silver_bcb"
-VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/silver/bcb/"
 
 print(f"Fonte  : {TABLE_BRONZE}")
 print(f"Destino: {TABLE_SILVER}")
-print(f"Volume : {VOLUME_PATH}")
 
 # COMMAND ----------
 
@@ -100,7 +98,6 @@ CREATE TABLE IF NOT EXISTS {TABLE_SILVER} (
     ingest_ts  STRING    COMMENT 'Timestamp de ingestão original da Bronze'
 )
 USING DELTA
-LOCATION '{VOLUME_PATH}'
 """)
 
 print(f"[OK] Tabela {TABLE_SILVER} pronta")

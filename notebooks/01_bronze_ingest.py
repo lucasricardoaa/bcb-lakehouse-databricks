@@ -41,7 +41,6 @@ print(f"Janela de ingestão: {data_inicio} → {data_fim}")
 CATALOG = "bcb_lakehouse_databricks"
 SCHEMA = "default"
 TABLE_BRONZE = f"{CATALOG}.{SCHEMA}.bronze_bcb"
-VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/bronze/bcb/"
 
 SERIES = {
     "1":   "USD/BRL",
@@ -52,7 +51,6 @@ SERIES = {
 BCB_BASE_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{serie_id}/dados"
 
 print(f"Tabela destino : {TABLE_BRONZE}")
-print(f"Volume path    : {VOLUME_PATH}")
 print(f"Séries         : {list(SERIES.keys())}")
 
 # COMMAND ----------
@@ -108,7 +106,6 @@ CREATE TABLE IF NOT EXISTS {TABLE_BRONZE} (
     source_url STRING    COMMENT 'URL de origem dos dados'
 )
 USING DELTA
-LOCATION '{VOLUME_PATH}'
 """)
 
 print(f"[OK] Tabela {TABLE_BRONZE} pronta (criada ou já existia)")
