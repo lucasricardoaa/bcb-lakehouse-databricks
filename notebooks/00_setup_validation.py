@@ -24,11 +24,14 @@ except Exception as e:
 
 # MAGIC ## 2. Criar Volumes no Unity Catalog (ADR-0006)
 
-volumes = ["bronze", "silver", "gold"]
+spark.sql("CREATE VOLUME IF NOT EXISTS bcb_lakehouse_databricks.default.bronze")
+print("[OK] Volume criado (ou já existia): bcb_lakehouse_databricks.default.bronze")
 
-for vol in volumes:
-    spark.sql(f"CREATE VOLUME IF NOT EXISTS bcb_lakehouse_databricks.default.{vol}")
-    print(f"[OK] Volume criado (ou já existia): bcb_lakehouse_databricks.default.{vol}")
+spark.sql("CREATE VOLUME IF NOT EXISTS bcb_lakehouse_databricks.default.silver")
+print("[OK] Volume criado (ou já existia): bcb_lakehouse_databricks.default.silver")
+
+spark.sql("CREATE VOLUME IF NOT EXISTS bcb_lakehouse_databricks.default.gold")
+print("[OK] Volume criado (ou já existia): bcb_lakehouse_databricks.default.gold")
 
 print("\nVolumes disponíveis em bcb_lakehouse_databricks.default:")
 display(spark.sql("SHOW VOLUMES IN bcb_lakehouse_databricks.default"))
