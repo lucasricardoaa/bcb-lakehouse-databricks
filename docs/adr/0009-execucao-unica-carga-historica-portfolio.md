@@ -1,7 +1,7 @@
 # ADR-0009: Execução única com carga histórica para portfólio estático
 
 ## Status
-Proposto
+Aceito
 
 ## Contexto
 
@@ -63,3 +63,7 @@ Não há alteração nos mecanismos internos do pipeline: o MERGE INTO definido 
 ## Revisão
 Elaborado por: Claude (Agente IA) — arquiteto-dados
 Data/hora: 2026-07-22 18:35 BRT
+
+## Aprovação
+Aprovado por: Lucas de Araújo
+Data/hora: 2026-07-22 BRT
