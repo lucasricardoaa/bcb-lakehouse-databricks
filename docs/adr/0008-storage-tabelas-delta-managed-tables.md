@@ -1,7 +1,7 @@
 # ADR-0008: Storage de tabelas Delta — tabelas gerenciadas do Unity Catalog em substituição a tabelas externas com LOCATION em Volume
 
 ## Status
-Proposto
+Aceito
 
 ## Contexto
 
@@ -92,3 +92,7 @@ O Unity Catalog gerencia o storage de cada tabela no ADLS Gen2 configurado no wo
 ## Revisão
 Elaborado por: Claude (Agente IA) — arquiteto-dados
 Data/hora: 2026-07-22 18:21 BRT
+
+## Aprovação
+Aprovado por: Lucas de Araújo
+Data/hora: 2026-07-22 BRT

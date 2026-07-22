@@ -1,7 +1,9 @@
 # ADR-0006: Armazenamento Delta — Unity Catalog Volumes como storage das camadas medallion
 
 ## Status
-Aceito
+Aceito — parcialmente substituído pela ADR-0008
+
+> A decisão de usar `/Volumes/` como cláusula `LOCATION` de tabelas Delta externas foi considerada inviável durante a execução (erro `Missing cloud file system scheme`). A ADR-0008 documenta a solução adotada: tabelas gerenciadas do Unity Catalog sem `LOCATION`. O restante desta ADR — adoção do Unity Catalog em substituição ao DBFS — permanece válido.
 
 ## Contexto
 
