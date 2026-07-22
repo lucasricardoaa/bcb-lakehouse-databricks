@@ -65,8 +65,8 @@ distintos = spark.sql(f"SELECT COUNT(*) AS n FROM (SELECT DISTINCT serie_id, dat
 checar(total == distintos, "Silver: sem duplicatas (serie_id, data)", f"{total} linhas vs {distintos} distintos", "total == distintos")
 
 # Assert 6  - Selic entre 0.01 e 50.0
-selic_fora = spark.sql(f"SELECT COUNT(*) AS n FROM {TABLE_SILVER} WHERE serie_id = '11' AND (valor < 0.01 OR valor > 50.0)").collect()[0]["n"]
-checar(selic_fora == 0, "Silver: Selic no range [0.01, 50.0]", selic_fora, 0)
+selic_fora = spark.sql(f"SELECT COUNT(*) AS n FROM {TABLE_SILVER} WHERE serie_id = '11' AND (valor < 0.001 OR valor > 50.0)").collect()[0]["n"]
+checar(selic_fora == 0, "Silver: Selic no range [0.001, 50.0]", selic_fora, 0)
 
 # Assert 7  - IPCA entre -5.0 e 30.0
 ipca_fora = spark.sql(f"SELECT COUNT(*) AS n FROM {TABLE_SILVER} WHERE serie_id = '433' AND (valor < -5.0 OR valor > 30.0)").collect()[0]["n"]

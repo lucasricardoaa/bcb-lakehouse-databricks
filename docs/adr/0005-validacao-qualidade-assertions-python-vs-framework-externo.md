@@ -52,7 +52,7 @@ def assert_sem_nulos(df, coluna, contexto):
 | Bronze | 3 | Presença das 3 séries (1, 11, 433) |
 | Silver | 4 | Zero registros com `valor IS NULL` |
 | Silver | 5 | Ausência de duplicatas por `(serie_id, data)` |
-| Silver | 6 | Range plausível: Selic entre 0,01 e 50,0 |
+| Silver | 6 | Range plausível: Selic entre 0,001 e 50,0 (taxa diária; mínimo histórico ~0,00787% no período COVID) |
 | Silver | 7 | Range plausível: IPCA entre -5,0 e 30,0 |
 | Silver | 8 | Range plausível: USD/BRL entre 1,0 e 20,0 |
 | Silver | 9 | Tipos corretos: `valor` como `double`, `data` como `date` |
