@@ -25,7 +25,7 @@ O contexto relevante para esta decisão:
 
 ## Decisão
 
-Adotar **assertions Python nativas com Delta constraints** como estratégia de validação de qualidade, implementadas no notebook `04_quality_checks.py`.
+Adotar **assertions Python nativas** como estratégia de validação de qualidade, implementadas no notebook `04_quality_checks.py`.
 
 **Estrutura de cada assertion:**
 
@@ -43,27 +43,24 @@ def assert_sem_nulos(df, coluna, contexto):
 [FALHA] {contexto}: {o que foi verificado}. Encontrado: {valor_real}. Esperado: {valor_esperado}.
 ```
 
-**Escopo mínimo de validações (10+ assertions):**
+**14 assertions implementadas:**
 
-| Camada | Validação |
-|--------|-----------|
-| Bronze | Contagem de registros por série vs. janela de datas solicitada (tolerância para feriados) |
-| Bronze | Ausência de `ingest_ts` nulo |
-| Bronze | Ausência de `serie_id` nulo |
-| Silver | Zero registros com `valor IS NULL` |
-| Silver | Ausência de duplicatas por `(serie_id, data)` |
-| Silver | Range plausível: Selic entre 0,01 e 50,0 |
-| Silver | Range plausível: IPCA entre -5,0 e 30,0 |
-| Silver | Range plausível: USD/BRL entre 1,0 e 20,0 |
-| Gold | `fct_indicadores` sem lacunas em dias úteis (join com `dim_data`) |
-| Gold | `dim_data` cobre 100% das datas presentes em `fct_indicadores` |
-
-**Delta constraints** (complemento, aplicados na Silver durante a Fase 4):
-```sql
-ALTER TABLE bcb_lakehouse_databricks.default.silver_bcb ADD CONSTRAINT valor_positivo CHECK (valor > 0)
-```
-
-Os constraints Delta são validados no momento da escrita — não substituem as assertions do notebook de quality checks, que validam semântica de negócio mais complexa.
+| Camada | Assert | Validação |
+|--------|--------|-----------|
+| Bronze | 1 | Ausência de `ingest_ts` nulo |
+| Bronze | 2 | Ausência de `serie_id` nulo |
+| Bronze | 3 | Presença das 3 séries (1, 11, 433) |
+| Silver | 4 | Zero registros com `valor IS NULL` |
+| Silver | 5 | Ausência de duplicatas por `(serie_id, data)` |
+| Silver | 6 | Range plausível: Selic entre 0,01 e 50,0 |
+| Silver | 7 | Range plausível: IPCA entre -5,0 e 30,0 |
+| Silver | 8 | Range plausível: USD/BRL entre 1,0 e 20,0 |
+| Silver | 9 | Tipos corretos: `valor` como `double`, `data` como `date` |
+| Gold | 10 | `fct_indicadores` tem registros |
+| Gold | 11 | `fct_indicadores` sem datas nulas |
+| Gold | 12 | `dim_data` cobre 100% das datas de `fct_indicadores` |
+| Gold | 13 | `dim_data` sem duplicatas por `data` |
+| Gold | 14 | `fct_indicadores` sem duplicatas por `data` |
 
 **Célula de sumário obrigatória:** o notebook deve encerrar com uma célula que imprime o total de verificações executadas e confirma `"Todas as X verificações passaram"` ou lista as falhas.
 
@@ -88,7 +85,7 @@ Os constraints Delta são validados no momento da escrita — não substituem as
 - **Mensagens de erro descritivas e customizadas**: cada assertion pode incluir contexto específico do domínio (nome da série, janela de datas, valor encontrado vs. esperado), impossível com frameworks genéricos
 - **Código Python legível e auditável**: qualquer engenheiro de dados entende as validações sem conhecer a API de nenhum framework
 - **Integração natural com o Workflow**: exceções Python interrompem a task de qualidade e marcam o job como falho automaticamente, sem configuração adicional
-- **Complemento com Delta constraints**: validações no nível de storage (Delta) e no nível de negócio (assertions Python) são camadas independentes que se reforçam
+- **Validação centralizada no notebook**: todas as regras de qualidade vivem em um único artefato versionado (`04_quality_checks.py`), facilitando auditoria e manutenção
 
 ### Negativas / Trade-offs
 - **Sem relatório HTML de qualidade**: ao contrário do Great Expectations no `bcb-pipeline`, não há um artefato visual navegável das validações — a evidência é o log de execução do Workflow

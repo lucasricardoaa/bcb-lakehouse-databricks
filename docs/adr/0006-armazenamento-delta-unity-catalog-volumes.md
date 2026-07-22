@@ -27,7 +27,7 @@ A estrutura de caminhos por camada é:
 
 | Camada | Caminho no Volume | Conteúdo |
 |--------|-------------------|----------|
-| Bronze | `/Volumes/bcb_lakehouse_databricks/default/bronze/bcb/{serie_id}/` | JSON bruto da API BCB, sem transformação |
+| Bronze | `/Volumes/bcb_lakehouse_databricks/default/bronze/bcb/` | Tabela Delta unificada com todas as séries; campos: `data`, `valor`, `serie_id`, `nome_serie`, `ingest_ts` |
 | Silver | `/Volumes/bcb_lakehouse_databricks/default/silver/bcb/` | Dados limpos, tipados, particionados por `ano` e `mes` |
 | Gold   | `/Volumes/bcb_lakehouse_databricks/default/gold/` | Modelo analítico (`fct_indicadores`, `dim_data`) |
 

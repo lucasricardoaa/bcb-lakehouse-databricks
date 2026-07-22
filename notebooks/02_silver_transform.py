@@ -124,23 +124,7 @@ print("[OK] MERGE INTO silver concluído")
 
 # COMMAND ----------
 
-# MAGIC ## 6. Delta constraint de valor positivo (ADR-0005)
-
-try:
-    spark.sql(f"""
-    ALTER TABLE {TABLE_SILVER}
-    ADD CONSTRAINT valor_positivo CHECK (valor > 0)
-    """)
-    print("[OK] Constraint valor_positivo adicionada")
-except Exception as e:
-    if "already exists" in str(e).lower():
-        print("[OK] Constraint valor_positivo já existia")
-    else:
-        raise
-
-# COMMAND ----------
-
-# MAGIC ## 7. Validação
+# MAGIC ## 6. Validação
 
 display(spark.sql(f"""
 SELECT
