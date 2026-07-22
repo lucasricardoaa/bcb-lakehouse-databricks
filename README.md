@@ -50,6 +50,10 @@ API BCB
   (orquestração das 4 tasks)
 ```
 
+**Workflow com as 4 tasks encadeadas:**
+
+![Databricks Workflow — bcb_pipeline](docs/images/databricks-pipeline-bcb_pipeline.jpg)
+
 ---
 
 ## Stack
@@ -63,6 +67,10 @@ API BCB
 | Orquestração | Databricks Workflows |
 | Versionamento | Git Folder (GitHub) |
 | Governança | Architecture Decision Records (ADRs) |
+
+**Catálogo Unity Catalog com as tabelas das 3 camadas:**
+
+![Unity Catalog — bcb_lakehouse_databricks](docs/images/databricks-catalog-bcb_lakehouse_databricks_default.jpg)
 
 ---
 
@@ -82,6 +90,14 @@ Pipeline executado com janela histórica `01/01/2020 → 22/07/2026`:
 - 2.395 dias de calendário (2020-01-01 → 2026-07-22)
 - 1.645 dias com câmbio USD/BRL e Selic (dias úteis disponíveis via API)
 - 2.373 dias com IPCA (todos os dias até junho/2026, via join mensal por `ano/mes`)
+
+**Indicadores econômicos por ano — dados prontos para consumo:**
+
+![Indicadores econômicos do Brasil 2021–2025](docs/images/databricks-sql_editor-brasil_6_anos.jpg)
+
+**15/15 quality checks passando com dados históricos reais:**
+
+![Quality checks — 15 assertions passaram](docs/images/databricks-notebook-04_quality_checks.jpg)
 
 ---
 
@@ -180,3 +196,8 @@ data_fim:    <data atual>
 - **Unity Catalog**: catálogo de 3 níveis (`catalog.schema.table`) com managed tables — storage gerenciado automaticamente no ADLS Gen2
 - **MERGE INTO idempotente**: reexecuções com a mesma janela não criam duplicatas
 - **ADR-driven**: 3 decisões iniciais foram revisadas durante a execução por descobertas de plataforma, com nova ADR documentando cada mudança em vez de alteração silenciosa
+- **Delta Lake time travel**: `VERSION AS OF 0` permite consultar o estado inicial da tabela Silver antes de qualquer MERGE incremental
+
+**Delta Lake Time Travel — estado inicial da silver_bcb (VERSION AS OF 0):**
+
+![Delta Lake Time Travel — silver_bcb VERSION AS OF 0](docs/images/databricks-sql_editor-time_travel_merge_into_silver_bcb.jpg)
