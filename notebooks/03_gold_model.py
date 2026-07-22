@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC # Gold Model — bcb-lakehouse-databricks
+# MAGIC # Gold Model  - bcb-lakehouse-databricks
 # MAGIC
 # MAGIC Constrói o modelo analítico da camada Gold a partir da Silver:
 # MAGIC - `dim_data`: calendário completo cobrindo o range dos dados Silver
@@ -7,7 +7,7 @@
 # MAGIC
 # MAGIC **Decisões de modelagem:**
 # MAGIC - USD/BRL e Selic: join direto por data (séries diárias)
-# MAGIC - IPCA: join por `(ano, mes)` — forward fill implícito para todos os dias do mês
+# MAGIC - IPCA: join por `(ano, mes)`  - forward fill implícito para todos os dias do mês
 # MAGIC - Tabelas gravadas com `overwrite` (Gold é modelo derivado, reconstruído integralmente)
 # MAGIC - OPTIMIZE + ZORDER BY data aplicados após a escrita
 # MAGIC
@@ -17,7 +17,7 @@
 
 # COMMAND ----------
 
-# MAGIC ## 1. Configuração
+#1. Configuração
 
 CATALOG = "bcb_lakehouse_databricks"
 SCHEMA = "default"
@@ -33,7 +33,7 @@ print(f"Gold dim  : {TABLE_DIM}")
 
 # COMMAND ----------
 
-# MAGIC ## 2. Range de datas da Silver
+#2. Range de datas da Silver
 
 row = spark.sql(f"SELECT MIN(data) AS min_d, MAX(data) AS max_d FROM {TABLE_SILVER}").collect()[0]
 min_date = str(row["min_d"])
@@ -43,7 +43,7 @@ print(f"Range Silver: {min_date} → {max_date}")
 
 # COMMAND ----------
 
-# MAGIC ## 3. dim_data — calendário completo
+#3. dim_data  - calendário completo
 
 from pyspark.sql.functions import col, year, month, quarter, dayofweek, date_format, when
 
@@ -71,7 +71,7 @@ print(f"dim_data: {df_dim.count()} dias ({min_date} → {max_date})")
 
 # COMMAND ----------
 
-# MAGIC ## 4. fct_indicadores — pivot das 3 séries
+#4. fct_indicadores  - pivot das 3 séries
 
 df_usd = spark.sql(f"""
     SELECT data, valor AS usd_brl
@@ -101,7 +101,7 @@ print(f"fct_indicadores: {df_fct.count()} linhas")
 
 # COMMAND ----------
 
-# MAGIC ## 5. Gravar dim_data
+#5. Gravar dim_data
 
 df_dim.write \
     .format("delta") \
@@ -119,7 +119,7 @@ print(f"[OK] {TABLE_DIM} gravada")
 
 # COMMAND ----------
 
-# MAGIC ## 6. Gravar fct_indicadores
+#6. Gravar fct_indicadores
 
 df_fct.write \
     .format("delta") \
@@ -137,14 +137,14 @@ print(f"[OK] {TABLE_FCT} gravada")
 
 # COMMAND ----------
 
-# MAGIC ## 7. OPTIMIZE + ZORDER
+#7. OPTIMIZE + ZORDER
 
 spark.sql(f"OPTIMIZE {TABLE_FCT} ZORDER BY (data)")
 print("[OK] OPTIMIZE + ZORDER BY data aplicados")
 
 # COMMAND ----------
 
-# MAGIC ## 8. Time travel (demonstração)
+#8. Time travel (demonstração)
 
 print("Versão 0 da fct_indicadores (time travel):")
 display(spark.sql(f"""
@@ -154,7 +154,7 @@ LIMIT 5
 
 # COMMAND ----------
 
-# MAGIC ## 9. Validação
+#9. Validação
 
 display(spark.sql(f"""
 SELECT

@@ -1,12 +1,12 @@
 # Databricks notebook source
-# MAGIC # Bronze Ingest — bcb-lakehouse-databricks
+# MAGIC # Bronze Ingest  - bcb-lakehouse-databricks
 # MAGIC
 # MAGIC Ingere séries históricas da API do Banco Central do Brasil (BCB) para a camada Bronze do Delta Lake.
 # MAGIC
 # MAGIC **Séries ingeridas:**
-# MAGIC - `1` — Câmbio USD/BRL (frequência diária)
-# MAGIC - `11` — Taxa Selic (frequência diária)
-# MAGIC - `433` — IPCA (frequência mensal)
+# MAGIC - `1`  - Câmbio USD/BRL (frequência diária)
+# MAGIC - `11`  - Taxa Selic (frequência diária)
+# MAGIC - `433`  - IPCA (frequência mensal)
 # MAGIC
 # MAGIC **ADRs que governam este notebook:**
 # MAGIC - ADR-0002: MERGE INTO como estratégia de ingestão incremental (chave: `serie_id + data`)
@@ -15,7 +15,7 @@
 
 # COMMAND ----------
 
-# MAGIC ## Parâmetros
+#Parâmetros
 
 dbutils.widgets.text("data_inicio", "", "Data início (dd/MM/yyyy)")
 dbutils.widgets.text("data_fim", "", "Data fim (dd/MM/yyyy)")
@@ -36,7 +36,7 @@ print(f"Janela de ingestão: {data_inicio} → {data_fim}")
 
 # COMMAND ----------
 
-# MAGIC ## 1. Configuração
+#1. Configuração
 
 CATALOG = "bcb_lakehouse_databricks"
 SCHEMA = "default"
@@ -57,7 +57,7 @@ print(f"Séries         : {list(SERIES.keys())}")
 
 # COMMAND ----------
 
-# MAGIC ## 2. Ingestão da API BCB
+#2. Ingestão da API BCB
 
 import requests
 
@@ -96,7 +96,7 @@ print(f"\nTotal acumulado: {len(registros)} registros")
 
 # COMMAND ----------
 
-# MAGIC ## 3. Criar tabela Bronze no Unity Catalog (ADR-0007)
+#3. Criar tabela Bronze no Unity Catalog (ADR-0007)
 
 spark.sql(f"""
 CREATE TABLE IF NOT EXISTS {TABLE_BRONZE} (
@@ -115,7 +115,7 @@ print(f"[OK] Tabela {TABLE_BRONZE} pronta (criada ou já existia)")
 
 # COMMAND ----------
 
-# MAGIC ## 4. MERGE INTO — ingestão incremental e idempotente (ADR-0002)
+#4. MERGE INTO  - ingestão incremental e idempotente (ADR-0002)
 
 df_novos = spark.createDataFrame(registros)
 df_novos.createOrReplaceTempView("novos_registros")
@@ -133,7 +133,7 @@ print("[OK] MERGE INTO concluído")
 
 # COMMAND ----------
 
-# MAGIC ## 5. Validação do resultado
+#5. Validação do resultado
 
 display(spark.sql(f"""
 SELECT

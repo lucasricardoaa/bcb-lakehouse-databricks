@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC # Silver Transform — bcb-lakehouse-databricks
+# MAGIC # Silver Transform  - bcb-lakehouse-databricks
 # MAGIC
 # MAGIC Transforma os dados brutos da camada Bronze: limpeza, tipagem e deduplicação.
 # MAGIC Grava na camada Silver com MERGE INTO incremental e idempotente.
@@ -17,7 +17,7 @@
 
 # COMMAND ----------
 
-# MAGIC ## Parâmetros
+#Parâmetros
 
 dbutils.widgets.text("data_inicio", "", "Data início (dd/MM/yyyy)")
 dbutils.widgets.text("data_fim", "", "Data fim (dd/MM/yyyy)")
@@ -38,7 +38,7 @@ print(f"Janela de processamento: {data_inicio} → {data_fim}")
 
 # COMMAND ----------
 
-# MAGIC ## 1. Configuração
+#1. Configuração
 
 CATALOG = "bcb_lakehouse_databricks"
 SCHEMA = "default"
@@ -52,7 +52,7 @@ print(f"Volume : {VOLUME_PATH}")
 
 # COMMAND ----------
 
-# MAGIC ## 2. Leitura e filtragem da Bronze
+#2. Leitura e filtragem da Bronze
 
 from pyspark.sql.functions import to_date, col, lit, year, month
 from datetime import datetime
@@ -70,7 +70,7 @@ print(f"Registros na janela: {df_filtered.count()}")
 
 # COMMAND ----------
 
-# MAGIC ## 3. Transformações
+#3. Transformações
 
 df_silver = (
     df_filtered
@@ -87,7 +87,7 @@ df_silver.printSchema()
 
 # COMMAND ----------
 
-# MAGIC ## 4. Criar tabela Silver no Unity Catalog (ADR-0007)
+#4. Criar tabela Silver no Unity Catalog (ADR-0007)
 
 spark.sql(f"""
 CREATE TABLE IF NOT EXISTS {TABLE_SILVER} (
@@ -107,7 +107,7 @@ print(f"[OK] Tabela {TABLE_SILVER} pronta")
 
 # COMMAND ----------
 
-# MAGIC ## 5. MERGE INTO — upsert incremental (ADR-0002)
+#5. MERGE INTO  - upsert incremental (ADR-0002)
 
 df_silver.createOrReplaceTempView("silver_novos")
 
@@ -124,7 +124,7 @@ print("[OK] MERGE INTO silver concluído")
 
 # COMMAND ----------
 
-# MAGIC ## 6. Validação
+#6. Validação
 
 display(spark.sql(f"""
 SELECT
